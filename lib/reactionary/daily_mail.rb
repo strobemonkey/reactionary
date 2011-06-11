@@ -53,31 +53,42 @@ module Reactionary
       
       article_id = get_article_id(urn)
     
-      page = @agent.post( @root_url + '/dwr/call/plaincall/AjaxReaderComments.getReaderCommentsCacheable5minutes.dwr', {
-        "callCount" => "1",
-        "page" => "#{urn}",
-        "httpSessionId" => "",
-        "scriptSessionId" => @session_id.to_s,
-        "c0-scriptName" => "AjaxReaderComments",
-        "c0-methodName" => "getReaderCommentsCacheable5minutes",
-        "c0-id" => "0",
-        "c0-param0" => "string:#{article_id.to_s}",
-        "c0-param1" => "string:#{number_of_ratings.to_s}",
-        "c0-param2" => "string:#{range}",
-        "batchId" => "1"
-      })
+      begin
+    
+        page = @agent.post( @root_url + '/dwr/call/plaincall/AjaxReaderComments.getReaderCommentsCacheable5minutes.dwr', {
+          "callCount" => "1",
+          "page" => "#{urn}",
+          "httpSessionId" => "",
+          "scriptSessionId" => @session_id.to_s,
+          "c0-scriptName" => "AjaxReaderComments",
+          "c0-methodName" => "getReaderCommentsCacheable5minutes",
+          "c0-id" => "0",
+          "c0-param0" => "string:#{article_id.to_s}",
+          "c0-param1" => "string:#{number_of_ratings.to_s}",
+          "c0-param2" => "string:#{range}",
+          "batchId" => "1"
+        })
 
-      ratings = page.body.split("\n")
+        ratings = page.body.split("\n")
 
-      # skip the first 3 lines and the last one
-      ratings = ratings[3..(number_of_ratings+2)]
+        # skip the first 3 lines and the last one
+        ratings = ratings[3..(ratings.size-2)]
+
+        # remove variable declarations from first line
+        ratings[0] = ratings[0].split(';',ratings.size + 1)[ratings.size]
+
+        # put all our ratings in json
+        ratings.collect { |rating| parse_rating(rating) }
+
+      rescue Exception => e
+        
+        pp e.message
+        pp e.backtrace
+        
+        ratings = []
+        
+      end
       
-      # remove variable declarations from first line
-      ratings[0] = ratings[0].split(';', 11)[10]
-
-      # put all our ratings in json
-      ratings.collect { |rating| parse_rating(rating) }
-
     end
 
     def parse_rating(rating_string)
@@ -128,7 +139,7 @@ module Reactionary
   
     # extract article id from the uri
     def get_article_id(urn)
-      /\/news\/article\-(.*)\/.*/.match(urn)[1].to_i
+      /\/(.*)\/article\-(.*)\/.*/.match(urn)[2].to_i
     end
   
     # extract a meta tag value from the page

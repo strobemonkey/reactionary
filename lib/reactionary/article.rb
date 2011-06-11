@@ -14,6 +14,8 @@ module Reactionary
     property :keywords
     property :ratings
   
+    view :all, :key => :_id
+    
   end
 
 end
