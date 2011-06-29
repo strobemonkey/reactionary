@@ -1,0 +1,89 @@
+--- 
+- !ruby/struct:VCR::HTTPInteraction 
+  request: !ruby/struct:VCR::Request 
+    method: :post
+    uri: http://www.dailymail.co.uk:80/dwr/call/plaincall/AjaxReaderComments.getReaderCommentsCacheable5minutes.dwr
+    body: 
+    headers: 
+      accept-language: 
+      - en-us,en;q=0.5
+      content-type: 
+      - application/x-www-form-urlencoded
+      user-agent: 
+      - Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_2; de-at) AppleWebKit/531.21.8 (KHTML, like Gecko) Version/4.0.4 Safari/531.21.10
+      connection: 
+      - keep-alive
+      accept-encoding: 
+      - gzip,identity
+      content-length: 
+      - "307"
+      host: 
+      - www.dailymail.co.uk
+      accept-charset: 
+      - ISO-8859-1,utf-8;q=0.7,*;q=0.7
+      keep-alive: 
+      - "300"
+  response: !ruby/struct:VCR::Response 
+    status: !ruby/struct:VCR::ResponseStatus 
+      code: 200
+      message: OK
+    headers: 
+      expires: 
+      - Mon, 13 Jun 2011 17:48:48 GMT
+      connection: 
+      - keep-alive
+      content-type: 
+      - text/javascript;charset=utf-8
+      date: 
+      - Mon, 13 Jun 2011 17:48:48 GMT
+      server: 
+      - Apache-Coyote/1.1
+      content-length: 
+      - "1608"
+      content-encoding: 
+      - gzip
+      vary: 
+      - Accept-Encoding
+      cache-control: 
+      - max-age=0, no-cache, no-store
+      pragma: 
+      - no-cache
+    body: !binary |
+      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
+
+    http_version: "1.1"

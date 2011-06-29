@@ -56,6 +56,13 @@ class TestDailyMail < Test::Unit::TestCase
     end
   end
 
+  def test_article_ratings_worst_rated
+    VCR.use_cassette('article-2002883', :record => :new_episodes) do
+      ratings = @dailymail.article_ratings('/news/article-2002883/Tony-Blair-reads-Koran-day-stay-faith-literate.html', 10, "worstRated")
+      assert_equal 10, ratings.size
+    end
+  end
+
   def test_article_with_no_ratings
     VCR.use_cassette('article-1393361', :record => :new_episodes) do
       article = @dailymail.article('/news/article-1393361/Woman-buried-alive-woods-real-life-Kill-Bill-ordeal.html')
@@ -83,10 +90,27 @@ class TestDailyMail < Test::Unit::TestCase
     end
   end
   
+  # def test_save_article_with_apostrophe_in_title
+  #   VCR.use_cassette('article-2002610', :record => :new_episodes) do
+  #     ratings = @dailymail.article_ratings('/news/article-2002610/Woman-inspector-humiliated-failing-riot-test-wins-30k.html', 10, "bestRated")
+  #     article = @dailymail.article('/news/article-2002610/Woman-inspector-humiliated-failing-riot-test-wins-30k.html')
+  #     article.ratings = ratings
+  #     CouchPotato.database.save_document article # or save_document!
+  #     saved_article = CouchPotato.database.view Reactionary::Article.all(:key => article._id, :descending => true)  
+  #     assert_equal saved_article[0].title, article.title
+  #   end
+  # end
+  
   def test_parse_rating
     rating = 's0.commentId=4619476;s0.creationDate=new Date(1297641726000);s0.name="Jason Piers";s0.townAndCountry="London UK";s0.voteCount=393;s0.yourComments="This business isnt a penny business, last week the DM ran a story on the chap who sells the clothes donated to the salvation army making \u00A311m and the Sally Army making \u00A316M from it, hardly a two bob industry."; '
     json_rating = @dailymail.parse_rating(rating)
     # puts json_rating
+  end
+
+  def test_parse_rating_worst
+    rating = 's0.commentId=6908594;s0.creationDate=new Date(1307953362000);s0.name="Sarah";s0.townAndCountry="Herts";s0.voteCount=-513;s0.yourComments="I miss you Tony, please come back!";'
+    json_rating = @dailymail.parse_rating(rating)
+    puts json_rating
   end
   
 end

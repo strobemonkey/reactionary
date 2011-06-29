@@ -38,6 +38,7 @@ module Reactionary
       @agent.get( @root_url + urn ) do |page|
         the_page = page
       end
+      # pp the_page.title.gsub(/'/, "\\\\'")
       article_id = get_article_id(urn)
       description = get_metatag(the_page, 'description')
       keywords = get_metatag(the_page, 'keywords')
@@ -45,7 +46,8 @@ module Reactionary
                   :url => @root_url + urn, 
                   :article_id => article_id, 
                   :description => description,
-                  :keywords => keywords
+                  :keywords => keywords,
+                  :_id => @root_url + urn
                   )
     end
 
@@ -73,12 +75,20 @@ module Reactionary
 
         # skip the first 3 lines and the last one
         ratings = ratings[3..(ratings.size-2)]
+        
+        if ratings.size > 0 then
 
-        # remove variable declarations from first line
-        ratings[0] = ratings[0].split(';',ratings.size + 1)[ratings.size]
+          # remove variable declarations from first line
+          ratings[0] = ratings[0].split(';',ratings.size + 1)[ratings.size]
 
-        # put all our ratings in json
-        ratings.collect { |rating| parse_rating(rating) }
+          # put all our ratings in json
+          ratings.collect { |rating| parse_rating(rating) }
+
+        else
+          
+          rations = []
+          
+        end
 
       rescue Exception => e
         
@@ -98,7 +108,7 @@ module Reactionary
       creation_date = /s[\d]*\.creationDate\=new\sDate\((\d*)\)/.match(fields[1])[1]
       name = /s[\d]*\.name\=\"(.*)\"/.match(fields[2])[1]
       town_and_country = /s[\d]*\.townAndCountry\=\"(.*)\"/.match(fields[3])[1]
-      vote_count = /s[\d]*\.voteCount\=(\d*)/.match(fields[4])[1]
+      vote_count = /s[\d]*\.voteCount\=([-]?\d*)/.match(fields[4])[1]
       comments = /s[\d]*\.yourComments\=\"(.*)\".{2,3}$/.match(fields[5])[1]
       your_comments = JsonParse.json_parse(comments)
       Rating.new(:comment_id => comment_id,
